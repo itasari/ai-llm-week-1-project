@@ -19,16 +19,16 @@ configurations = {
         "api_key": os.getenv("RUNPOD_API_KEY"),
         "model": "mistralai/Mistral-7B-Instruct-v0.3"
     },
-    "openai_gpt-4": {
+    "openai_gpt-4o": {
         "endpoint_url": os.getenv("OPENAI_ENDPOINT"),
         "api_key": os.getenv("OPENAI_API_KEY"),
-        "model": "gpt-4"
+        "model": "gpt-4o"
     }
 }
 
 # Choose configuration
-config_key = "openai_gpt-4"
-#config_key = "mistral_7B_instruct"
+config_key = "openai_gpt-4o"
+# config_key = "mistral_7B_instruct"
 
 # Get selected configuration
 config = configurations[config_key]

@@ -5,6 +5,8 @@ from langsmith.evaluation import evaluate, LangChainStringEvaluator
 from langsmith.schemas import Run, Example
 from openai import OpenAI
 import json
+import os
+import openai
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -12,7 +14,28 @@ load_dotenv()
 from langsmith.wrappers import wrap_openai
 from langsmith import traceable
 
-client = wrap_openai(OpenAI())
+configurations = {
+    "mistral_7B_instruct": {
+        "endpoint_url": os.getenv("MISTRAL_7B_INSTRUCT_ENDPOINT"),
+        "api_key": os.getenv("RUNPOD_API_KEY"),
+        "model": "mistralai/Mistral-7B-Instruct-v0.3"
+    },
+    "openai_gpt-4o": {
+        "endpoint_url": os.getenv("OPENAI_ENDPOINT"),
+        "api_key": os.getenv("OPENAI_API_KEY"),
+        "model": "gpt-4o"
+    }
+}
+
+# Choose configuration
+config_key = "openai_gpt-4o"
+#config_key = "mistral_7B_instruct"
+
+# Get selected configuration
+config = configurations[config_key]
+
+# Initialize the OpenAI client
+client = wrap_openai(openai.Client(api_key=config["api_key"], base_url=config["endpoint_url"]))
 
 @traceable
 def prompt_evaluator(run: Run, example: Example) -> dict:
@@ -79,7 +102,7 @@ def prompt_evaluator(run: Run, example: Example) -> dict:
     """
 
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model=config["model"],
         messages=[
             {"role": "system", "content": "You are an AI assistant tasked with evaluating the compliance of model outputs to given prompts and conversation context, as well as the student's engagement and progress in learning Chinese."},
             {"role": "user", "content": evaluation_prompt}
